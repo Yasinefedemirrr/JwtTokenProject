@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace JWT.Application.Features.CQRS.Results.CityWeatherResults
 {
-    public class CityWeatherQueryResult
+    public class GetCityWeatherByIdQueryResult
     {
         public int CityId { get; set; }
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public int Temperature { get; set; }
+
     }
 }

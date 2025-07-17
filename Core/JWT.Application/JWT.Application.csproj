@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Features\CQRS\Commands\CityWeatherCommands\" />
     <Folder Include="Features\CQRS\Handlers\CityWeatherHandlers\" />
-    <Folder Include="Features\CQRS\Queries\CityWeatherQueries\" />
   </ItemGroup>
 
   <ItemGroup>
