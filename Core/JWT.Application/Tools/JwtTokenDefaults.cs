@@ -10,7 +10,7 @@ namespace JWT.Application.Tools
     {
         public const string ValidAudience = "http://localhost";
         public const string ValidIssuer = "http://localhost";
-        public const string Key = "cargocargocargo1cargocargocargo1";
+        public const string Key = "jwttokenjwttokenjwttokenjwttoken";
         public const int Expire = 5;
     }
 }
