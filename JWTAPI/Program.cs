@@ -3,17 +3,35 @@ using JWT.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Context;
 using Persistance.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using JWT.Application.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ------------------------------------
-// ✅ Veritabanı Bağlantısı (SQL Server)
 builder.Services.AddDbContext<JwtContext>(options =>
     options.UseSqlServer("Server=YASINEFEDEMIR\\SQLEXPRESS;Database=JwtProject;Trusted_Connection=True;TrustServerCertificate=True;")
 );
 
-// ------------------------------------
-// ✅ Scoped Servis Kayıtları
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = JwtTokenDefaults.ValidIssuer,
+            ValidAudience = JwtTokenDefaults.ValidAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtTokenDefaults.Key)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<GetCityWeatherQueryHandler>();
 builder.Services.AddScoped<GetCityWeatherByIdQueryHandler>();
@@ -21,16 +39,14 @@ builder.Services.AddScoped<CreateCityWeatherCommandHandler>();
 builder.Services.AddScoped<UpdateCityWeatherCommandHandler>();
 builder.Services.AddScoped<RemoveCityWeatherCommandHandler>();
 
-// ------------------------------------
-// ✅ Controller ve Swagger Ayarları
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ------------------------------------
-// ✅ Middleware Pipeline
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -39,7 +55,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthorization();     
 
 app.MapControllers();
 

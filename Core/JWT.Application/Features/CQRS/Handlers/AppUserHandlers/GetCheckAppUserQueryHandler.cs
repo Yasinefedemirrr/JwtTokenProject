@@ -40,3 +40,4 @@ namespace JWT.Application.Features.CQRS.Handlers.AppUserHandlers
             return values;
         }
     }
+}
