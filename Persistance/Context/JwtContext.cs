@@ -25,5 +25,7 @@ namespace Persistance.Context
         public DbSet<AppRole> AppRoles { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<CityWeather> CityWeathers { get; set; }
+        public DbSet<District> Districts { get; set; }
+       
     }
 }

@@ -11,5 +11,7 @@ namespace JWT.Domain.Entity
         public string Name { get; set; }
         public DateTime Date { get; set; }
         public int Temperature { get; set; }
+
+        public List <District> Districts { get; set; }
     }
 }
