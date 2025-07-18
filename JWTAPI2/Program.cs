@@ -1,15 +1,52 @@
+﻿using JWT.Application.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Persistance.Context;
+using Persistance.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using JWT.Application.Tools;
+using JWT.Application.Features.CQRS.Handlers.Districthandlers;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+builder.Services.AddDbContext<JwtContext>(options =>
+    options.UseSqlServer("Server=YASINEFEDEMIR\\SQLEXPRESS;Database=JwtProject;Trusted_Connection=True;TrustServerCertificate=True;")
+);
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = JwtTokenDefaults.ValidIssuer,
+            ValidAudience = JwtTokenDefaults.ValidAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtTokenDefaults.Key)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<GetDistrictQueryHandler>();
+builder.Services.AddScoped<GetDistrictByIdQueryHandler>();
+builder.Services.AddScoped<CreateDistrictCommandHandlers>();
+builder.Services.AddScoped<UpdateDistrictCommandHandlers>();
+builder.Services.AddScoped<RemoveDistrictCommandHandlers>();
+
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,8 +55,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+
+app.UseAuthentication();  
+app.UseAuthorization();  
 
 app.MapControllers();
-
 app.Run();
