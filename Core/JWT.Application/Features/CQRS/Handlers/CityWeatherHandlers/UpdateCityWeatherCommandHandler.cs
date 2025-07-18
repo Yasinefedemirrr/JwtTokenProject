@@ -25,7 +25,8 @@ namespace JWT.Application.Features.CQRS.Handlers.CityWeatherHandlers
            values.Name = command.Name;
             values.Date = command.Date;
             values.Temperature = command.Temperature;
-            
+
+            await _repository.UpdateAsync(values);
 
         }
     }
