@@ -1,5 +1,27 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<JWT.WEBUI.Models.DistrictViewModel>
+
 @{
+    ViewData["Title"] = "İlçeler";
 }
+
+<h2>İlçeler</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>İlçe</th>
+            <th>Sıcaklık (°C)</th>
+            <th>Tarih</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DistrictName</td>
+                <td>@item.Temperature</td>
+                <td>@item.Date.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
