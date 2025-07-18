@@ -10,6 +10,7 @@ using JWT.Application.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddDbContext<JwtContext>(options =>
     options.UseSqlServer("Server=YASINEFEDEMIR\\SQLEXPRESS;Database=JwtProject;Trusted_Connection=True;TrustServerCertificate=True;")
 );
@@ -55,8 +56,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();     
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
