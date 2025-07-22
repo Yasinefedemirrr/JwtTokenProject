@@ -32,8 +32,11 @@ namespace JWT.WEBUI.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
-                var tokenObj = JsonSerializer.Deserialize<TokenResponse>(responseData);
-                TempData["token"] = tokenObj.token;
+                var tokenObj = JsonSerializer.Deserialize<TokenResponse>(responseData, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                TempData["token"] = tokenObj.Token;
                 return RedirectToAction("Index", "CityWeather");
             }
 
