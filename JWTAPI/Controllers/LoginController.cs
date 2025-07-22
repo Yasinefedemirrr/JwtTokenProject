@@ -38,7 +38,7 @@ namespace JWTAPI.Controllers
             };
 
             var token = JwtTokenGenerator.GenerateToken(result);
-            return Created("", token);
+            return Ok(token);
         }
     }
 }

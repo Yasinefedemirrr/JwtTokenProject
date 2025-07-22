@@ -1,6 +1,7 @@
 ﻿using JWT.WEBUI.Models;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace JWT.WEBUI.Controllers
@@ -25,7 +26,7 @@ namespace JWT.WEBUI.Controllers
         {
             var client = _httpClientFactory.CreateClient();
             var jsonData = JsonSerializer.Serialize(model);
-            StringContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync("https://localhost:7270/api/Login", content);
 
@@ -36,11 +37,18 @@ namespace JWT.WEBUI.Controllers
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                TempData["token"] = tokenObj.Token;
-                return RedirectToAction("Index", "CityWeather");
+
+                if (tokenObj != null && !string.IsNullOrEmpty(tokenObj.Token))
+                {
+                    TempData["token"] = tokenObj.Token;
+                    return RedirectToAction("Index", "CityWeather");
+                }
+
+                ViewBag.Error = "Token alınamadı.";
+                return View();
             }
 
-            ViewBag.Error = "Kullanıcı adı veya şifre yanlış";
+            ViewBag.Error = "Kullanıcı adı veya şifre yanlış.";
             return View();
         }
 

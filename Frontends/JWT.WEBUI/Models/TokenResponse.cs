@@ -1,4 +1,6 @@
-﻿namespace JWT.WEBUI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace JWT.WEBUI.Models
 {
     public class TokenResponse
     {

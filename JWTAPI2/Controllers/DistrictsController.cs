@@ -2,7 +2,6 @@
 using JWT.Application.Features.CQRS.Handlers.Districthandlers;
 using JWT.Application.Features.CQRS.Queries.DistrictQueries;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JWTAPI2.Controllers
@@ -32,11 +31,13 @@ namespace JWTAPI2.Controllers
             _removeDistrictCommandHandler = removeDistrictCommandHandler;
         }
 
+        // 🔧 Şehre göre filtrelenmiş ilçe listesi
         [HttpGet]
-        public async Task<IActionResult> DistrictList()
+        public async Task<IActionResult> DistrictList([FromQuery] int id)
         {
             var values = await _getDistrictQueryHandler.Handle();
-            return Ok(values);
+            var filtered = values.Where(x => x.CityId == id).ToList();
+            return Ok(filtered);
         }
 
         [HttpGet("{id}")]
