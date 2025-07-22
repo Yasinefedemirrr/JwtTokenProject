@@ -1,4 +1,6 @@
-﻿using JWT.WEBUI.Models;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using JWT.WEBUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Text;
@@ -40,6 +42,14 @@ namespace JWT.WEBUI.Controllers
 
                 if (tokenObj != null && !string.IsNullOrEmpty(tokenObj.Token))
                 {
+                    
+                    var role = GetRoleFromToken(tokenObj.Token);
+
+                    if (role == null || role.ToLower() != "admin")
+                    {
+                        return RedirectToAction("AccessDenied");
+                    }
+
                     TempData["token"] = tokenObj.Token;
                     return RedirectToAction("Index", "CityWeather");
                 }
@@ -55,6 +65,15 @@ namespace JWT.WEBUI.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+       
+       private string? GetRoleFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            return jwtToken.Claims.FirstOrDefault(c => c.Type == "role" || c.Type.EndsWith("role"))?.Value;
         }
     }
 }
