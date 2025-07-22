@@ -27,7 +27,7 @@ namespace JWT.WEBUI.Controllers
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync($"https://localhost:7280/api/Districts?id={id}");
+            var response = await client.GetAsync($"https://localhost:7171/api/Districts?id={id}");
 
             if (response.IsSuccessStatusCode)
             {

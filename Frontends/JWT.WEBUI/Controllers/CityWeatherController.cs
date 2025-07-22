@@ -38,5 +38,25 @@ namespace JWT.WEBUI.Controllers
 
             return View(cityWeatherList);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDistricts(int cityId)
+        {
+            var token = TempData["token"]?.ToString();
+            TempData.Keep("token");
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"https://localhost:7280/api/Districts?id={cityId}");
+
+            if (!response.IsSuccessStatusCode)
+                return Json(new { success = false });
+
+            var jsonData = await response.Content.ReadAsStringAsync();
+            var districts = JsonSerializer.Deserialize<List<DistrictViewModel>>(jsonData);
+
+            return Json(districts);
+        }
     }
 }
