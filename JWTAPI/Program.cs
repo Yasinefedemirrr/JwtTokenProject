@@ -33,14 +33,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<GetCityWeatherQueryHandler>();
-builder.Services.AddScoped<GetCityWeatherByIdQueryHandler>();
-builder.Services.AddScoped<CreateCityWeatherCommandHandler>();
-builder.Services.AddScoped<UpdateCityWeatherCommandHandler>();
-builder.Services.AddScoped<RemoveCityWeatherCommandHandler>();
 
 
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

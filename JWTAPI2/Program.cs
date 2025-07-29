@@ -1,4 +1,5 @@
-﻿using JWT.Application.Features.CQRS.Handlers.Districthandlers;
+﻿using JWT.Application.Features.CQRS.Handlers.CityWeatherHandlers;
+using JWT.Application.Features.CQRS.Handlers.Districthandlers;
 using JWT.Application.Interfaces;
 using JWT.Application.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,8 +32,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero // Token süresi bittiğinde hemen geçersiz say
         };
     });
-
 // CQRS Handler ve Repository bağımlılıkları
+
+
+builder.Services.AddScoped<GetCityWeatherQueryHandler>();
+builder.Services.AddScoped<GetCityWeatherByIdQueryHandler>();
+builder.Services.AddScoped<CreateCityWeatherCommandHandler>();
+builder.Services.AddScoped<UpdateCityWeatherCommandHandler>();
+builder.Services.AddScoped<RemoveCityWeatherCommandHandler>();
+
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<GetDistrictQueryHandler>();
 builder.Services.AddScoped<GetDistrictByIdQueryHandler>();
