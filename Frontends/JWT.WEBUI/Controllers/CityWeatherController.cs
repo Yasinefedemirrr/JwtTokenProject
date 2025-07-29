@@ -16,9 +16,8 @@ namespace JWT.WEBUI.Controllers
 
         public async Task<IActionResult> Index()
         {
-            
             var token = TempData["token"]?.ToString();
-            TempData.Keep("token"); 
+            TempData.Keep("token");
 
             if (string.IsNullOrEmpty(token))
                 return RedirectToAction("Index", "Login");
@@ -26,7 +25,7 @@ namespace JWT.WEBUI.Controllers
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync("https://localhost:7270/api/CityWeathers");
+            var response = await client.GetAsync("https://localhost:7270/api/Proxy/cityweathers");
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 return RedirectToAction("AccessDenied", "Login");
@@ -49,19 +48,17 @@ namespace JWT.WEBUI.Controllers
             var token = TempData["token"]?.ToString();
             TempData.Keep("token");
 
+            if (string.IsNullOrEmpty(token))
+                return Json(new { success = false, message = "Token bulunamadı." });
+
             var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync($"https://localhost:7171/api/Districts?id={cityId}");
-
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
-                response.StatusCode == System.Net.HttpStatusCode.Forbidden)
-            {
-                return Json(new { success = false, message = "Erişim reddedildi." });
-            }
+            var response = await client.GetAsync($"https://localhost:7270/api/Proxy/districtweathers/{cityId}");
 
             if (!response.IsSuccessStatusCode)
-                return Json(new { success = false });
+                return Json(new { success = false, message = "Veri alınamadı." });
 
             var jsonData = await response.Content.ReadAsStringAsync();
             var districts = JsonSerializer.Deserialize<List<DistrictViewModel>>(jsonData, new JsonSerializerOptions
@@ -69,7 +66,7 @@ namespace JWT.WEBUI.Controllers
                 PropertyNameCaseInsensitive = true
             });
 
-            return Json(districts);
+            return Json(new { success = true, data = districts });
         }
     }
 }
