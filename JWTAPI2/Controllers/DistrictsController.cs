@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JWTAPI2.Controllers
 {
-    [Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class DistrictsController : ControllerBase
@@ -31,7 +30,7 @@ namespace JWTAPI2.Controllers
             _removeDistrictCommandHandler = removeDistrictCommandHandler;
         }
 
-        // 🔧 Şehre göre filtrelenmiş ilçe listesi
+       
         [HttpGet]
         public async Task<IActionResult> DistrictList([FromQuery] int id)
         {
