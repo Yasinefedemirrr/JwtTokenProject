@@ -26,14 +26,14 @@
             fetch(`/CityWeather/GetDistricts?cityId=${cityId}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (Array.isArray(data)) {
-                        if (data.length === 0) {
+                    if (data.success && Array.isArray(data.data)) {
+                        if (data.data.length === 0) {
                             div.innerHTML = "İlçe bilgisi bulunamadı.";
                             return;
                         }
 
                         let html = "<ul>";
-                        data.forEach(d => {
+                        data.data.forEach(d => {
                             html += `<li>${d.districtName} : ${d.temperature}°C</li>`;
                         });
                         html += "</ul>";
