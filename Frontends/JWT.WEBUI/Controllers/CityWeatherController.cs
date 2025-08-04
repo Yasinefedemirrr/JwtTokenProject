@@ -16,16 +16,14 @@ namespace JWT.WEBUI.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var token = TempData["token"]?.ToString();
-            TempData.Keep("token");
-
+            var token = Request.Cookies["JWTToken"];
             if (string.IsNullOrEmpty(token))
                 return RedirectToAction("Index", "Login");
 
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync("https://localhost:7270/api/Proxy/cityweathers");
+            var response = await client.GetAsync("https://localhost:7270/api/CityWeathers");
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 return RedirectToAction("AccessDenied", "Login");
@@ -45,17 +43,14 @@ namespace JWT.WEBUI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDistricts(int cityId)
         {
-            var token = TempData["token"]?.ToString();
-            TempData.Keep("token");
-
+            var token = Request.Cookies["JWTToken"];
             if (string.IsNullOrEmpty(token))
                 return Json(new { success = false, message = "Token bulunamadı." });
 
             var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = await client.GetAsync($"https://localhost:7270/api/Proxy/districtweathers/{cityId}");
+            var response = await client.GetAsync($"https://localhost:7270/api/Districts?id={cityId}");
 
             if (!response.IsSuccessStatusCode)
                 return Json(new { success = false, message = "Veri alınamadı." });
