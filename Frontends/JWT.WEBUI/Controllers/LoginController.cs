@@ -2,7 +2,6 @@
 using System.Linq;
 using JWT.WEBUI.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -42,7 +41,6 @@ namespace JWT.WEBUI.Controllers
 
                 if (tokenObj != null && !string.IsNullOrEmpty(tokenObj.Token))
                 {
-                    
                     var role = GetRoleFromToken(tokenObj.Token);
 
                     if (role == null || role.ToLower() != "admin")
@@ -50,7 +48,14 @@ namespace JWT.WEBUI.Controllers
                         return RedirectToAction("AccessDenied");
                     }
 
-                    TempData["token"] = tokenObj.Token;
+                    // Cookie olarak token sakla
+                    Response.Cookies.Append("JWTToken", tokenObj.Token, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        Expires = tokenObj.ExpireDate
+                    });
+
                     return RedirectToAction("Index", "CityWeather");
                 }
 
@@ -67,12 +72,10 @@ namespace JWT.WEBUI.Controllers
             return View();
         }
 
-       
-       private string? GetRoleFromToken(string token)
+        private string? GetRoleFromToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-
             return jwtToken.Claims.FirstOrDefault(c => c.Type == "role" || c.Type.EndsWith("role"))?.Value;
         }
     }
