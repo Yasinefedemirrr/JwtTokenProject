@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using JWT.Application.Tools;
-using JWT.Domain.Entity;
 using Persistance.Context;
 using JWT.Application.Dtos;
 using JWT.Application.Features.CQRS.Results.AppUserResults;
@@ -29,7 +28,6 @@ namespace JWTAPI.Controllers
             if (user == null)
                 return BadRequest("Kullanıcı adı veya şifre hatalıdır.");
 
-
             var result = new GetCheckAppUserQueryResult
             {
                 Id = user.AppUserId,
@@ -38,6 +36,15 @@ namespace JWTAPI.Controllers
             };
 
             var token = JwtTokenGenerator.GenerateToken(result);
+
+           
+            Response.Cookies.Append("JWTToken", token.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = token.ExpireDate
+            });
+
             return Ok(token);
         }
     }
