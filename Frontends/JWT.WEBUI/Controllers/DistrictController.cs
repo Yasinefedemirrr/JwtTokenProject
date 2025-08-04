@@ -16,18 +16,14 @@ namespace JWT.WEBUI.Controllers
 
         public async Task<IActionResult> Index(int id)
         {
-            var token = TempData["token"]?.ToString();
+            var token = Request.Cookies["JWTToken"];
             if (string.IsNullOrEmpty(token))
                 return RedirectToAction("AccessDenied", "Login");
 
-            TempData.Keep("token");
-
             var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // 🔁 API2 yerine artık API1 üzerinden proxy çağrısı yapıyoruz
-            var response = await client.GetAsync($"https://localhost:7270/api/Proxy/districtweathers/{id}");
+            var response = await client.GetAsync($"https://localhost:7270/api/Districts?id={id}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
                 response.StatusCode == System.Net.HttpStatusCode.Forbidden)
