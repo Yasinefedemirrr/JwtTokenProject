@@ -10,7 +10,8 @@ namespace JWT.Application.Tools
     {
         public const string ValidAudience = "http://localhost";
         public const string ValidIssuer = "http://localhost";
-        public const string Key = "jwttokenjwttokenjwttokenjwttoken";
-        public const int Expire = 5;
+        public const string Key = "jwttokenjwttokenjwttokenjwttoken"; // 32+ karakter olmalı
+        public const int AccessTokenExpireMinutes = 5; // Access Token süresi
+        public const int RefreshTokenExpireDays = 7;   // Refresh Token süresi
     }
 }
