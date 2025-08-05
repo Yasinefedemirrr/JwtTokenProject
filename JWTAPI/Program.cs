@@ -67,7 +67,7 @@ builder.Services.AddSwaggerGen(c =>
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "JWT Bearer token giriniz. Örn: Bearer {token}",
+        Description = "JWT Bearer token giriniz. Bearer {token}",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
