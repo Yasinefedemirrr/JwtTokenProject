@@ -14,5 +14,8 @@ namespace JWT.Domain.Entity
 
         public int AppRoleId { get; set; }
         public AppRole AppRole { get; set; }
+
+        public string RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpireDate { get; set; }
     }
 }
