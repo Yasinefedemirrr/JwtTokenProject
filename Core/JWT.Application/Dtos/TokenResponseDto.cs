@@ -10,11 +10,15 @@ namespace JWT.Application.Dtos
     {
         public string Token { get; set; }
         public DateTime ExpireDate { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpireDate { get; set; }
 
-        public TokenResponseDto(string token, DateTime expireDate)
+        public TokenResponseDto(string token, DateTime expireDate, string refreshToken, DateTime refreshTokenExpireDate)
         {
             Token = token;
             ExpireDate = expireDate;
+            RefreshToken = refreshToken;
+            RefreshTokenExpireDate = refreshTokenExpireDate;
         }
     }
 }
