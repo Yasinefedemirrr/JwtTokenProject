@@ -12,11 +12,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddDbContext<JwtContext>(options =>
     options.UseSqlServer("Server=YASINEFEDEMIR\\SQLEXPRESS;Database=JwtProject;Trusted_Connection=True;TrustServerCertificate=True;")
 );
-
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -34,7 +32,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
 builder.Services.AddScoped<GetCityWeatherQueryHandler>();
 builder.Services.AddScoped<GetCityWeatherByIdQueryHandler>();
 builder.Services.AddScoped<CreateCityWeatherCommandHandler>();
@@ -47,12 +44,8 @@ builder.Services.AddScoped<CreateDistrictCommandHandlers>();
 builder.Services.AddScoped<UpdateDistrictCommandHandlers>();
 builder.Services.AddScoped<RemoveDistrictCommandHandlers>();
 
-
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-
 builder.Services.AddHttpClient();
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -96,21 +89,38 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-
+// Middleware: Access Token yoksa Refresh Token ile yenile
 app.Use(async (context, next) =>
 {
-    if (context.Request.Cookies.ContainsKey("JWTToken"))
+    var token = context.Request.Cookies["JWTToken"];
+    if (string.IsNullOrEmpty(token))
     {
-        var token = context.Request.Cookies["JWTToken"];
-        if (!string.IsNullOrEmpty(token))
+        var refreshToken = context.Request.Cookies["RefreshToken"];
+        if (!string.IsNullOrEmpty(refreshToken))
         {
-            context.Request.Headers["Authorization"] = $"Bearer {token}";
+            using var client = new HttpClient();
+            var refreshResponse = await client.PostAsync("https://localhost:7270/api/Login/RefreshToken", null);
+
+            if (!refreshResponse.IsSuccessStatusCode)
+            {
+                // Refresh token da geçersizse login sayfasına yönlendirme yapılabilir
+            }
         }
     }
+
+    // Token varsa Authorization header'a ekle
+    if (context.Request.Cookies.ContainsKey("JWTToken"))
+    {
+        var activeToken = context.Request.Cookies["JWTToken"];
+        if (!string.IsNullOrEmpty(activeToken))
+        {
+            context.Request.Headers["Authorization"] = $"Bearer {activeToken}";
+        }
+    }
+
     await next();
 });
 
-// Swagger UI
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -118,10 +128,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
