@@ -11,6 +11,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JWT.Application.Tools
 {
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Text;
+    using Microsoft.IdentityModel.Tokens;
+
     public class JwtTokenGenerator
     {
         public static TokenResponseDto GenerateToken(GetCheckAppUserQueryResult result)
@@ -26,16 +31,28 @@ namespace JWT.Application.Tools
                 claims.Add(new Claim("Username", result.Username));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtTokenDefaults.Key));
-
             var signinCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var expireDate = DateTime.UtcNow.AddDays(JwtTokenDefaults.Expire);
+            var expireDate = DateTime.UtcNow.AddMinutes(JwtTokenDefaults.AccessTokenExpireMinutes);
 
-            JwtSecurityToken token = new JwtSecurityToken(issuer: JwtTokenDefaults.ValidIssuer, audience: JwtTokenDefaults.ValidAudience, claims: claims, notBefore: DateTime.UtcNow, expires: expireDate, signingCredentials: signinCredentials);
+            var token = new JwtSecurityToken(
+                issuer: JwtTokenDefaults.ValidIssuer,
+                audience: JwtTokenDefaults.ValidAudience,
+                claims: claims,
+                notBefore: DateTime.UtcNow,
+                expires: expireDate,
+                signingCredentials: signinCredentials
+            );
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var accessToken = tokenHandler.WriteToken(token);
 
-            return new TokenResponseDto(tokenHandler.WriteToken(token), expireDate);
+           
+            var refreshToken = Guid.NewGuid().ToString();
+            var refreshTokenExpireDate = DateTime.UtcNow.AddDays(JwtTokenDefaults.RefreshTokenExpireDays);
+
+            return new TokenResponseDto(accessToken, expireDate, refreshToken, refreshTokenExpireDate);
         }
     }
+
 }
